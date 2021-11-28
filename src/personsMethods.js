@@ -1,11 +1,11 @@
 const db = [];
 const personsMethods = {
-    getAll = () => db,
+    getAll: () => db,
 
-    getById = (id) => {
+    getById: (id) => {
         return db.find((person) => person.id === id);
     }, 
-    updateById = (id, personForUpdate) => {
+    updateById: (id, personForUpdate) => {
         const indexForUpdate = db.findIndex((person) => person.id === id);
         db.splice(indexForUpdate, 1);
         personForUpdate.id = id;
@@ -13,13 +13,13 @@ const personsMethods = {
 
         return personForUpdate;
     },
-    deleteById = (id) => {
+    deleteById: (id) => {
         const indexForDelete = db.findIndex((person) => person.id === id);
         const deletedPerson = db.splice(indexForDelete, 1);
         
         return deletedPerson;
     },
-    create = (person) => {
+    create: (person) => {
         db.push(person);
     }
 }
