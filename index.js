@@ -9,19 +9,7 @@ const server = http.createServer((req, res) => {
     
     const url = req.url;
     const method = req.method;
-    const urlParts = url.split('/');
-    const id = urlParts[2];
-    const urlRootPart = urlParts[1];
-    const urlPartsLength = urlParts.length;
-    const isIduuid = uuidValidate(id) && uuidVersion(id) === 4 && urlPartsLength < 4;
     
-
-    console.log(uuidv4());
-
-    if(id && !isIduuid) {
-
-    }
-
     if(url === '/person' && method === 'GET') {
         res.writeHead(200, {'Content-type': 'application/json'});
         res.write(JSON.stringify('Get all users'));
@@ -31,6 +19,24 @@ const server = http.createServer((req, res) => {
         res.write(JSON.stringify('Create user'));
         res.end(JSON.stringify(req.url));
     } else {
+        const urlParts = url.split('/');
+        const id = urlParts[2];
+        const urlRootPart = urlParts[1];
+        const urlPartsLength = urlParts.length;
+        const isIduuid = uuidValidate(id) && uuidVersion(id) === 4;
+        
+        if(urlPartsLength > 3 || urlRootPart !== 'person') {
+            res.writeHead(404, {'Content-type': 'application/json'});
+            res.end(JSON.stringify(`requested resource ${url} does not exist`));
+        }
+
+        if(!isIduuid) {
+            res.writeHead(400, {'Content-type': 'application/json'});
+            res.end(JSON.stringify(`Id ${id} in your request isn't uuid`));
+        }
+
+        console.log(uuidv4());
+
         if (url.match(/\/person\/[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12}/) && method === 'GET' && isIduuid) {
             console.log('GET another url');
         } else if (url.match(/\/person\/[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12}/) && method === 'PUT' && isIduuid) {
@@ -38,7 +44,8 @@ const server = http.createServer((req, res) => {
         } else if (url.match(/\/person\/[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12}/) && method === 'DELETE' && isIduuid) {
             console.log('DELETE another url');
         } else {
-            console.log('Default');
+            res.writeHead(404, {'Content-type': 'application/json'});
+            res.end(JSON.stringify(`requested resource ${url} does not exist`));
         }
     } 
 
