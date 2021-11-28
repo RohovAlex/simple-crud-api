@@ -3,7 +3,7 @@ require('dotenv').config();
 
 const router = require('./src/router')
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT;
 
 const server = http.createServer(router);
 

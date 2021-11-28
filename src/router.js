@@ -76,8 +76,52 @@ module.exports = (req, res) => {
 
         } else if (url.match(/\/person\/[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12}/) && method === 'PUT' && isIduuid) {
             
-        } else if (url.match(/\/person\/[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12}/) && method === 'DELETE' && isIduuid) {
+            let body = '';
+            req.on('data', (chank) => {
+                body += chank.toString();
+            })
+            req.on('end', () => {
+                try {
+                    const {name, age, hobbies } = JSON.parse(body);
+                    if(name && age && hobbies) {
+                        const newPerson = {
+                            name,
+                            age,
+                            hobbies
+                        };
+
+                        const updatedPerson = personsMethods.updateById(id, newPerson);
+
+                        if(updatedPerson) {
+                            res.writeHead(200, {'Content-type': 'application/json'});
+                            res.end(JSON.stringify(updatedPerson));
             
+                        } else {
+                            res.writeHead(404, {'Content-type': 'application/json'});
+                            res.end(JSON.stringify(`person with id ${id} not found`));
+                        }
+                        
+                    } else {
+                        res.writeHead(400, {'Content-type': 'application/json'});
+                        res.end(JSON.stringify('invalid data or empty required fields'));
+                    }
+                } catch (error) {
+                    res.writeHead(500, {'Content-type': 'application/json'});
+                    res.end(JSON.stringify('Something went wrong on server'));
+                }  
+            })
+
+        } else if (url.match(/\/person\/[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12}/) && method === 'DELETE' && isIduuid) {
+            const deletedPerson = personsMethods.deleteById(id);
+
+            if(deletedPerson) {
+                res.writeHead(204, {'Content-type': 'application/json'});
+                res.end();
+
+            } else {
+                res.writeHead(404, {'Content-type': 'application/json'});
+                res.end(JSON.stringify(`person with id ${id} not found`));
+            }
         } else {
             res.writeHead(404, {'Content-type': 'application/json'});
             res.end(JSON.stringify(`requested resource ${url} does not exist`));

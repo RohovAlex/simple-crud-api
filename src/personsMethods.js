@@ -18,9 +18,12 @@ const personsMethods = {
     },
     deleteById: (id) => {
         const indexForDelete = db.findIndex((person) => person.id === id);
-        const deletedPerson = db.splice(indexForDelete, 1);
-        
-        return deletedPerson;
+        if (indexForDelete === -1) {
+            return
+        } else {
+            const deletedPerson = db.splice(indexForDelete, 1);
+            return deletedPerson;
+        }  
     },
     create: (person) => {
         db.push(person);
