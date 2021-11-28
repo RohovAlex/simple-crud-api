@@ -7,6 +7,9 @@ const personsMethods = {
     }, 
     updateById: (id, personForUpdate) => {
         const indexForUpdate = db.findIndex((person) => person.id === id);
+        if(indexForUpdate === -1) {
+            return
+        }
         db.splice(indexForUpdate, 1);
         personForUpdate.id = id;
         db.push(personForUpdate);

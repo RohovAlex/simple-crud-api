@@ -20,10 +20,12 @@ module.exports = (req, res) => {
             try {
                 const {name, age, hobbies } = JSON.parse(body);
                 if(name && age && hobbies) {
-                    const newPerson = {};
-                    newPerson.name = name;
-                    newPerson.age = age;
-                    newPerson.hobbies = hobbies;
+                    const newPerson = {
+                        name,
+                        age,
+                        hobbies
+                    };
+                    
                     newPerson.id = uuidv4();
 
                     personsMethods.create(newPerson);
@@ -60,14 +62,22 @@ module.exports = (req, res) => {
             res.end(JSON.stringify(`Id ${id} in your request isn't uuid`));
         }
 
-        console.log(uuidv4());
-
         if (url.match(/\/person\/[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12}/) && method === 'GET' && isIduuid) {
-            console.log('GET another url');
+            const person = personsMethods.getById(id);
+
+            if(person) {
+                res.writeHead(200, {'Content-type': 'application/json'});
+                res.end(JSON.stringify(person));
+
+            } else {
+                res.writeHead(404, {'Content-type': 'application/json'});
+                res.end(JSON.stringify(`person with id ${id} not found`));
+            }
+
         } else if (url.match(/\/person\/[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12}/) && method === 'PUT' && isIduuid) {
-            console.log('PUT another url');
+            
         } else if (url.match(/\/person\/[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12}/) && method === 'DELETE' && isIduuid) {
-            console.log('DELETE another url');
+            
         } else {
             res.writeHead(404, {'Content-type': 'application/json'});
             res.end(JSON.stringify(`requested resource ${url} does not exist`));
