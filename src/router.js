@@ -57,7 +57,7 @@ module.exports = (req, res) => {
             res.end(JSON.stringify(`requested resource ${url} does not exist`));
         }
 
-        if(!isIduuid) {
+        if(id && !isIduuid) {
             res.writeHead(400, {'Content-type': 'application/json'});
             res.end(JSON.stringify(`Id ${id} in your request isn't uuid`));
         }
